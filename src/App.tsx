@@ -3,9 +3,11 @@ import {NavigationBar} from "./navigation.tsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./home.tsx";
 import Footer from "./footer.tsx";
+import {OpenIdConnectProvider} from "./system/openidconnect.tsx";
 
 export default function App() {
     return (
+        <OpenIdConnectProvider>
         <Router>
             <NavigationBar />
             <Routes>
@@ -19,6 +21,7 @@ export default function App() {
             </Routes>
             <Footer />
         </Router>
+        </OpenIdConnectProvider>
     );
 }
 

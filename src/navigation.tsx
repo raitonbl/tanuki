@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User } from "lucide-react";
+import { useOpenIdConnect } from "./system/openidconnect.tsx";
 
 export function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const location = useLocation();
     const isActive = (path: string) => location.pathname.startsWith(path);
+
+    const { securityPrincipal, login, logout } = useOpenIdConnect();
 
     return (
         <nav className="bg-red-600 text-white shadow-md p-4 fixed top-0 left-0 w-full z-50">
@@ -17,7 +20,9 @@ export function NavigationBar() {
                         Tanuki
                     </Link>
                     <span className="text-gray-300">|</span>
-                    <Link to="/" className=" font-bold text-white hover:text-white">Registry</Link>
+                    <Link to="/" className="font-bold text-white hover:text-white">
+                        Registry
+                    </Link>
                 </div>
 
                 {/* Center - Search Bar */}
@@ -42,23 +47,32 @@ export function NavigationBar() {
                     <div className="relative">
                         <button
                             className="flex items-center space-x-2"
-                            onClick={() => setUserMenuOpen(!userMenuOpen)}
+                            onClick={() => {
+                                if (securityPrincipal) {
+                                    setUserMenuOpen(!userMenuOpen);
+                                } else {
+                                    login(); // Redirect to log in if not authenticated
+                                }
+                            }}
                         >
                             <User className="w-6 h-6" />
+                            {securityPrincipal && <span className="ml-2">{securityPrincipal.name}</span>}
                         </button>
-                        {userMenuOpen && (
+                        {securityPrincipal && userMenuOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg p-2">
-                                <Link to="/" className="block px-4 py-2 hover:bg-gray-100">Logout</Link>
+                                <button
+                                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                    onClick={logout}
+                                >
+                                    Logout
+                                </button>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Mobile Menu Toggle */}
-                <button
-                    className="md:hidden flex justify-end"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
+                <button className="md:hidden flex justify-end" onClick={() => setIsOpen(!isOpen)}>
                     {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
             </div>
@@ -73,6 +87,17 @@ export function NavigationBar() {
                     />
                     <Link to="/providers" className="hover:text-gray-300">Providers</Link>
                     <Link to="/modules" className="hover:text-gray-300">Modules</Link>
+
+                    {/* Mobile Authentication Options */}
+                    {securityPrincipal ? (
+                        <button className="hover:text-gray-300 text-left" onClick={logout}>
+                            Logout
+                        </button>
+                    ) : (
+                        <button className="hover:text-gray-300 text-left" onClick={login}>
+                            Login
+                        </button>
+                    )}
                 </div>
             )}
         </nav>

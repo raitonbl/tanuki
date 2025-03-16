@@ -14,6 +14,7 @@ const (
 )
 
 const (
+	DefaultServerPort  = 8080
 	DefaultServiceName = "tanuki"
 	DefaultEnvironment = "development"
 )
@@ -39,9 +40,9 @@ func NewConfigurationFromFlags(flags Flags) (Config, error) {
 	_ = viperInstance.BindPFlag("servers.management.port", flags.Lookup("servers.management.port"))
 	_ = viperInstance.BindPFlag("log-level", flags.Lookup("log-level"))
 
-	configFilePath := viperInstance.GetString(ConfigurationFileEnvironmentVariable)
-	isConfigFileDefined := configFilePath != ""
-	if !isConfigFileDefined {
+	configFilePath := os.Getenv(ConfigurationFileEnvironmentVariable)
+	isConfigFileUserDefined := configFilePath != ""
+	if !isConfigFileUserDefined {
 		configFilePath = "local.yaml"
 	}
 	_, err := os.Stat(configFilePath)
@@ -49,29 +50,42 @@ func NewConfigurationFromFlags(flags Flags) (Config, error) {
 		if !os.IsNotExist(err) {
 			return Config{}, err
 		}
-		if isConfigFileDefined {
+		if isConfigFileUserDefined {
 			return Config{}, err
 		}
+	} else {
 		viperInstance.SetConfigFile(configFilePath)
 		if err = viperInstance.ReadInConfig(); err != nil {
 			return Config{}, err
 		}
 	}
-	var config Config
-	if err = viperInstance.Unmarshal(&config); err != nil {
+	var instance Config
+	if err = viperInstance.Unmarshal(&instance); err != nil {
 		return Config{}, err
 	}
-	if config.LogLevel == "" {
-		config.LogLevel = InfoLogLevel
+	if instance.LogLevel == "" {
+		instance.LogLevel = InfoLogLevel
 	}
-	if !funk.Contains([]string{DebugLogLevel, InfoLogLevel}, config.LogLevel) {
-		return config, fmt.Errorf("log-level must be either %s or %s", InfoLogLevel, DebugLogLevel)
+	if !funk.Contains([]string{DebugLogLevel, InfoLogLevel}, instance.LogLevel) {
+		return instance, fmt.Errorf("log-level must be either %s or %s", InfoLogLevel, DebugLogLevel)
 	}
-	if config.Environment == "" {
-		config.Environment = DefaultEnvironment
+	if instance.Environment == "" {
+		instance.Environment = DefaultEnvironment
 	}
-	if config.Service == "" {
-		config.Service = DefaultServiceName
+	if instance.Service == "" {
+		instance.Service = DefaultServiceName
 	}
-	return config, nil
+	if instance.Targets == nil {
+		instance.Targets = getDefaultTargets()
+	}
+	if instance.Servers.Registry.Port == nil {
+		instance.Servers.Registry.Port = funk.PtrOf(DefaultServerPort).(*int)
+	}
+	return instance, nil
+}
+
+func getDefaultTargets() []string {
+	return []string{
+		"https://registry.terraform.io/",
+	}
 }

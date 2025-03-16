@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/raitonbl/tanuki/internal/config"
+	"github.com/raitonbl/tanuki/internal/context"
+	"github.com/raitonbl/tanuki/internal/registry"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +26,11 @@ func NewServe() *cobra.Command {
 }
 
 func serve(cfg config.Config) error {
-	//TODO: Create proxy server
+	ctx := context.NewContext(cfg)
+	err := registry.ListenAndServe(ctx)
+	if err != nil {
+		ctx.Logger().Error(err.Error())
+	}
 	//TODO: Create management server
 	return nil
 }

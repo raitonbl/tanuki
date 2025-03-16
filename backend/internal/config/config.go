@@ -7,7 +7,7 @@ const (
 
 type Config struct {
 	Targets     []string `mapstructure:"target"`
-	Servers     Servers  `mapstructure:"servers"`
+	Servers     Servers  `mapstructure:"server"`
 	Database    Database `mapstructure:"database"`
 	LogLevel    string   `mapstructure:"log-level"`
 	Environment string   `mapstructure:"environment"`

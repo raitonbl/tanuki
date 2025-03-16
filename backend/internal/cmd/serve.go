@@ -15,13 +15,14 @@ func NewServe() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := config.NewConfigurationFromFlags(cmd.Flags())
+			cfg, err := config.NewConfigurationFromFlags(cmd.PersistentFlags())
 			if err != nil {
 				return err
 			}
 			return serve(cfg)
 		},
 	}
+	config.BindSpf13CobraFlags(cmd.PersistentFlags())
 	return cmd
 }
 

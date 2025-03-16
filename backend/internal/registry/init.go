@@ -29,7 +29,7 @@ func ListenAndServe(ctx context.Context) error {
 	for _, f := range seq {
 		f(routeContext, api)
 	}
-	portDefinition := fmt.Sprintf(":%d", *cfg.Servers.Registry.Port)
+	portDefinition := fmt.Sprintf("0.0.0.0:%d", *cfg.Servers.Registry.Port)
 	if cfg.Servers.Registry.TLS != nil {
 		return r.RunTLS(portDefinition, cfg.Servers.Registry.TLS.CertFile, cfg.Servers.Registry.TLS.KeyFile)
 	}

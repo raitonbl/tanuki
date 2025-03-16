@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	EnvironmentVariablePrefix            = "TANUKI_SERVER_"
-	ConfigurationFileEnvironmentVariable = EnvironmentVariablePrefix + "CONFIGURATION_FILE"
+	EnvironmentVariablePrefix            = "TANUKI"
+	ConfigurationFileEnvironmentVariable = EnvironmentVariablePrefix + "_CONFIGURATION_FILE"
 )
 
 const (
@@ -33,6 +33,7 @@ func NewConfigurationFromFlags(flags Flags) (Config, error) {
 	fmt.Println(
 		"-------------------",
 	)
+
 	for k, v := range viperInstance.AllKeys() {
 		fmt.Println(k, v)
 	}

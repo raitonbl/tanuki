@@ -1,14 +1,21 @@
 package config
 
 import (
+	"fmt"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"github.com/thoas/go-funk"
 	"os"
 )
 
 const (
 	EnvironmentVariablePrefix            = "TANUKI_SERVER_"
 	ConfigurationFileEnvironmentVariable = EnvironmentVariablePrefix + "CONFIGURATION_FILE"
+)
+
+const (
+	DefaultServiceName = "tanuki"
+	DefaultEnvironment = "development"
 )
 
 type Flags interface {
@@ -53,6 +60,18 @@ func NewConfigurationFromFlags(flags Flags) (Config, error) {
 	var config Config
 	if err = viperInstance.Unmarshal(&config); err != nil {
 		return Config{}, err
+	}
+	if config.LogLevel == "" {
+		config.LogLevel = InfoLogLevel
+	}
+	if !funk.Contains([]string{DebugLogLevel, InfoLogLevel}, config.LogLevel) {
+		return config, fmt.Errorf("log-level must be either %s or %s", InfoLogLevel, DebugLogLevel)
+	}
+	if config.Environment == "" {
+		config.Environment = DefaultEnvironment
+	}
+	if config.Service == "" {
+		config.Service = DefaultServiceName
 	}
 	return config, nil
 }

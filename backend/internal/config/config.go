@@ -1,10 +1,18 @@
 package config
 
+const (
+	InfoLogLevel  = "INFO"
+	DebugLogLevel = "DEBUG"
+)
+
 type Config struct {
-	Targets  []string `mapstructure:"target"`
-	Servers  Servers  `mapstructure:"servers"`
-	Database Database `mapstructure:"database"`
-	LogLevel string   `mapstructure:"log-level"`
+	Targets     []string `mapstructure:"target"`
+	Servers     Servers  `mapstructure:"servers"`
+	Database    Database `mapstructure:"database"`
+	LogLevel    string   `mapstructure:"log-level"`
+	Environment string   `mapstructure:"environment"`
+	Service     string   `mapstructure:"service"`
+	Solution    string   `mapstructure:"part-of"`
 }
 
 type Servers struct {
@@ -13,7 +21,7 @@ type Servers struct {
 }
 
 type Server struct {
-	Port int `mapstructure:"port"`
+	Port *int `mapstructure:"port"`
 }
 
 type Database struct {

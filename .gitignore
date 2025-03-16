@@ -813,3 +813,6 @@ $RECYCLE.BIN/
 dist/
 backend/key.pem
 backend/cert.pem
+*.pem
+*.csr
+registry.key

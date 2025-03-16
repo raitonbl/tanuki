@@ -21,7 +21,7 @@ func ListenAndServe(ctx context.Context) error {
 	seq := []func(context.Context, *gin.RouterGroup){
 		setProvidersRoute,
 	}
-	api := r.Group("/v1")
+	api := r.Group("/registry.terraform.io")
 	routeContext := &DefaultContext{
 		context: ctx,
 		logger:  logger,

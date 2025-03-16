@@ -11,10 +11,10 @@ import (
 )
 
 func setProvidersRoute(ctx context.Context, apiGroup *gin.RouterGroup) {
-	api := apiGroup.Group("providers")
-	api.GET("/:namespace/:type/:version", createGetProviderMetadata(ctx))
-	api.GET("/:namespace/:type/versions", createGetProviderVersionsHandler(ctx))
-	api.GET("/:namespace/:type/:version/download/:os/:arch", createGetProviderDownloadURL(ctx))
+	//api := apiGroup.Group("providers")
+	apiGroup.GET("/:namespace/:type/:version.json", createGetProviderMetadata(ctx))
+	apiGroup.GET("/:namespace/:type/index.json", createGetProviderVersionsHandler(ctx))
+	//api.GET("/:namespace/:type/:v/download/:os/:arch", createGetProviderDownloadURL(ctx))
 }
 
 func createGetProviderVersionsHandler(ctx context.Context) func(c *gin.Context) {
@@ -64,7 +64,7 @@ func createGetProviderDownloadURL(ctx context.Context) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		redirectTo := fmt.Sprintf(
 			"/v1/providers/%s/%s/%s/download/%s/%s",
-			c.Param("namespace"), c.Param("type"), c.Param("version"),
+			c.Param("namespace"), c.Param("type"), c.Param("v"),
 			c.Param("os"), c.Param("arch"),
 		)
 		response, err := sendHttpRequestToRegistry(ctx, redirectTo)

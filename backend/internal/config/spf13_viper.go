@@ -168,6 +168,6 @@ func assertServerTLSConfiguration(server *Server, name string) error {
 
 func getDefaultTargets() []string {
 	return []string{
-		"https://registry.terraform.io/",
+		"https://registry.terraform.io",
 	}
 }

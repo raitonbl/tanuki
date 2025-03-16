@@ -1,22 +1,23 @@
 package main
 
 import (
-	"fmt"
+	"github.com/raitonbl/tanuki/internal/cmd"
 	"github.com/spf13/cobra"
+	"log"
+)
+
+var (
+	version string = "0.0.1"
 )
 
 func main() {
-	var rootCmd = &cobra.Command{
-		Use:   "tanuki",
-		Short: "Tanuki server command",
+	app := &cobra.Command{
+		Use:     "tanuki",
+		Short:   "A command line service that serves a terraform registry proxy",
+		Version: version,
 	}
-
-	var serveCmd = &cobra.Command{
-		Use:   "serve",
-		Short: "Start the Tanuki server",
-		Run: func(cmd *cobra.Command, args []string) {
-			config := loadConfig()
-			fmt.Printf("Starting server with config: %+v\n", config)
-		},
+	app.AddCommand(cmd.NewCommands()...)
+	if err := app.Execute(); err != nil {
+		log.Fatalf("Error: %v", err)
 	}
 }

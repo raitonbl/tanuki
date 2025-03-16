@@ -810,3 +810,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,webstorm,webstorm+iml,webstorm+all,intellij,intellij+iml,intellij+all,goland,goland+iml,goland+all,node
+dist/

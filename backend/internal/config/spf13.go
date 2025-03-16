@@ -81,6 +81,34 @@ func NewConfigurationFromFlags(flags Flags) (Config, error) {
 	if instance.Servers.Registry.Port == nil {
 		instance.Servers.Registry.Port = funk.PtrOf(DefaultServerPort).(*int)
 	}
+
+	assertTLSConfigurationOnServer := func(target Server, name string) error {
+		if target.TLS == nil {
+			return nil
+		}
+		if target.TLS.CertFile == "" {
+			return fmt.Errorf("servers.%s.tls.cert must be set", name)
+		}
+		if _, prob := os.Stat(target.TLS.CertFile); prob != nil {
+			return fmt.Errorf("servers.%s.tls.cert=%s couldn't be accessed due to: %v", name, target.TLS.CertFile, prob)
+		}
+		if target.TLS.KeyFile == "" {
+			return fmt.Errorf("servers.%s.tls.key must be set", name)
+		}
+		if _, prob := os.Stat(target.TLS.KeyFile); prob != nil {
+			return fmt.Errorf("servers.%s.tls.key=%s couldn't be accessed due to: %v", name, target.TLS.KeyFile, prob)
+		}
+		return nil
+	}
+
+	if err = assertTLSConfigurationOnServer(instance.Servers.Registry, "registry"); err != nil {
+		return Config{}, err
+	}
+
+	if err = assertTLSConfigurationOnServer(instance.Servers.Management, "management"); err != nil {
+		return Config{}, err
+	}
+
 	return instance, nil
 }
 

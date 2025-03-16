@@ -21,7 +21,13 @@ type Servers struct {
 }
 
 type Server struct {
-	Port *int `mapstructure:"port"`
+	Port *int       `mapstructure:"port"`
+	TLS  *ServerTLS `mapstructure:"tls"`
+}
+
+type ServerTLS struct {
+	KeyFile  string `mapstructure:"key"`
+	CertFile string `mapstructure:"cert"`
 }
 
 type Database struct {
